@@ -62,6 +62,7 @@ export default function PricingPage() {
   const [confirmFor, setConfirmFor] = useState<Product | null>(null);
   const [agentResponse, setAgentResponse] =
   useState<any>(null);
+  const [loadingAgent, setLoadingAgent] = useState(false);
   useEffect(() => {
   async function loadProducts() {
     try {
@@ -143,6 +144,7 @@ async function openConfirm(
 ) {
    console.log("AI Insights clicked", p);
    setConfirmFor(p);
+   setLoadingAgent(true);
   try {
     const user = getUser();
 
@@ -154,18 +156,18 @@ setAgentResponse(null);
     user.user_id,
     p.product_name
   );
+setLoadingAgent(false);
 
+console.log("Agent loaded");
 console.log(
   "Agent Response:",
   agentResult
 );
-console.log("Agent Result:", agentResult);
 
-setAgentResponse(
-  agentResult
-);
+setAgentResponse(agentResult);
   } catch (error) {
     console.error(error);
+    setLoadingAgent(false);
   }
 }
 
@@ -465,6 +467,7 @@ onClick={(e) => {
 <ConfirmDialog
   product={confirmFor}
   agentResponse={agentResponse}
+  loadingAgent={loadingAgent}
   onCancel={() => setConfirmFor(null)}
   onConfirm={confirmApply}
 />
@@ -475,11 +478,13 @@ onClick={(e) => {
 function ConfirmDialog({
   product,
   agentResponse,
+  loadingAgent,
   onCancel,
   onConfirm,
 }: {
   product: Product | null;
- agentResponse: any;
+  agentResponse: any;
+  loadingAgent: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }) {
@@ -538,7 +543,8 @@ const pct =
               >
                 {up ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
                 {up ? "+" : ""}
-                {pct.toFixed(1)}%
+                {agentResponse?.price_change_percent ??
+  `${pct.toFixed(1)}%`}
               </span>
             </div>
 
@@ -548,7 +554,8 @@ const pct =
                   Current
                 </p>
 <p className="mt-1 text-2xl font-semibold text-foreground">
-  ₹{product.base_price.toLocaleString("en-IN")}
+ {agentResponse?.current_price ??
+  `₹${product.base_price.toLocaleString("en-IN")}`}
 </p>
               </div>
               <div className="text-center text-muted-foreground">
@@ -567,7 +574,8 @@ const pct =
                   Suggested
                 </p>
 <p className="mt-1 text-2xl font-semibold text-primary">
-  ₹{product.recommended_price.toLocaleString("en-IN")}
+  {agentResponse?.suggested_price ??
+  `₹${product.recommended_price.toLocaleString("en-IN")}`}
 </p>
               </div>
             </div>
@@ -586,6 +594,13 @@ const pct =
 </p>
 
 
+{loadingAgent && (
+  <div className="mt-3 rounded-lg border border-border/60 bg-card-elevated/40 p-3">
+    <p className="text-sm font-medium text-primary">
+      Generating AI Insights...
+    </p>
+  </div>
+)}
 
 {agentResponse && (
   <div className="mt-3 rounded-lg border border-border/60 bg-card-elevated/40 p-3">
@@ -623,6 +638,47 @@ const pct =
         <strong>Confidence Score:</strong>{" "}
         {agentResponse.confidence_score}
       </p>
+{agentResponse.competitors && (
+  <div className="mt-4">
+    <p className="font-semibold">
+      Competitors
+    </p>
+
+<div className="mt-2 space-y-2">
+  {agentResponse.competitors.map(
+    (c: any, index: number) => (
+      <div
+        key={index}
+        className="rounded-md border border-border/60 p-2"
+      >
+        <p>
+          <strong>Name:</strong> {c.name}
+        </p>
+
+        <p>
+          <strong>Price:</strong> {c.price}
+        </p>
+
+<p>
+  <strong>Status:</strong>{" "}
+  <span
+    className={
+      c.status.includes("lower")
+        ? "text-success"
+        : c.status.includes("higher")
+        ? "text-warning"
+        : "text-primary"
+    }
+  >
+    {c.status}
+  </span>
+</p>
+      </div>
+    )
+  )}
+</div>
+  </div>
+)}
     </div>
   </div>
 )}
@@ -646,7 +702,8 @@ const pct =
                 }`}
               >
                 {up ? "+" : "-"}
-              {product.dynamic_boost_pct}%
+              {agentResponse?.revenue_insight ??
+  `${product.dynamic_boost_pct}%`}
               </p>
             </div>
             <div className="rounded-lg border border-border/60 bg-card-elevated/40 p-3">
@@ -655,7 +712,7 @@ const pct =
                 <p className="text-[10px] uppercase tracking-wider">Demand</p>
               </div>
 <p className="mt-1 text-base font-semibold text-foreground">
-  Seasonal Match
+  {agentResponse?.demand_insight ?? "Seasonal Match"}
 </p>
             </div>
             <div className="rounded-lg border border-border/60 bg-card-elevated/40 p-3">
