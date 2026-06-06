@@ -65,7 +65,7 @@ if (mode === "signup") {
         token: result.access_token,
       });
 
-      navigate("/");
+      navigate("/upload");
     }
 } catch (error: any) {
   console.error("Authentication Error:", error);

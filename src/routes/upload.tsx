@@ -19,6 +19,11 @@ export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [featureEngineering, setFeatureEngineering] = useState(false);
+  const [featureStatus, setFeatureStatus] =
+  useState<"PROCESSING" | "COMPLETED" | "FAILED">(
+    "PROCESSING"
+  );
   const [history, setHistory] = useState<UploadedFile[]>([
     { name: "products_oct_2025.csv", size: 184320, uploadedAt: "2 days ago", type: "Product catalog" },
     { name: "inventory_q3.xlsx", size: 92160, uploadedAt: "1 week ago", type: "Inventory" },
@@ -72,6 +77,8 @@ const upload = async () => {
     toast.success(
       "Dataset uploaded successfully"
     );
+    setFeatureStatus("PROCESSING");
+    setFeatureEngineering(true);
 
     const interval = setInterval(
       async () => {
@@ -86,18 +93,16 @@ const upload = async () => {
             status
           );
 
-          if (
-            status.status ===
-            "SUCCEEDED"
-          ) {
-            clearInterval(
-              interval
-            );
+          if (status.status === "SUCCEEDED") {
+  clearInterval(interval);
 
-            toast.success(
-              "Feature Engineering Completed"
-            );
-          }
+  
+setFeatureStatus("COMPLETED");
+
+toast.success(
+  "Feature Engineering Completed"
+);
+}
 
           if (
             status.status ===
@@ -106,10 +111,11 @@ const upload = async () => {
             clearInterval(
               interval
             );
+setFeatureStatus("FAILED");
 
-            toast.error(
-              "Feature Engineering Failed"
-            );
+toast.error(
+  "Feature Engineering Failed"
+);
           }
         } catch (error) {
           console.error(
@@ -137,7 +143,53 @@ const upload = async () => {
   }
 };
 
-  return (
+return (
+  <>
+    {featureEngineering && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+        <div className="rounded-xl bg-card p-8 text-center shadow-xl">
+<h2
+  className={`text-xl font-semibold ${
+    featureStatus === "COMPLETED"
+      ? "text-green-500"
+      : featureStatus === "FAILED"
+      ? "text-red-500"
+      : ""
+  }`}
+>
+  {featureStatus === "PROCESSING" &&
+    "Feature Engineering in Progress"}
+
+  {featureStatus === "COMPLETED" &&
+    "Feature Engineering Completed"}
+
+  {featureStatus === "FAILED" &&
+    "Feature Engineering Failed"}
+</h2>
+
+<p className="mt-3 text-sm text-muted-foreground">
+  {featureStatus === "PROCESSING" &&
+    "Please wait while the dataset is being processed."}
+
+  {featureStatus === "COMPLETED" &&
+    "Feature engineering completed successfully. You can now continue."}
+
+  {featureStatus === "FAILED" &&
+    "Feature engineering failed. Please try again."}
+</p>
+          {featureStatus !== "PROCESSING" && (
+  <Button
+    className="mt-4"
+    onClick={() => {
+      setFeatureEngineering(false);
+    }}
+  >
+    OK
+  </Button>
+)}
+        </div>
+      </div>
+    )}
     <div className="space-y-6 pt-8 pb-12">
       <PageHeader
         eyebrow="Data"
@@ -288,6 +340,7 @@ const upload = async () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+        </div>
+  </>
+);
 }

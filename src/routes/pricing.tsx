@@ -141,11 +141,13 @@ function applySuggestion(
 async function openConfirm(
   p: Product
 ) {
+   console.log("AI Insights clicked", p);
+   setConfirmFor(p);
   try {
     const user = getUser();
 
     if (!user) return;
-    setConfirmFor(p);
+    console.log("Calling invokeAgent...");
 setAgentResponse(null);
     const agentResult =
   await invokeAgent(
@@ -157,6 +159,7 @@ console.log(
   "Agent Response:",
   agentResult
 );
+console.log("Agent Result:", agentResult);
 
 setAgentResponse(
   agentResult
@@ -440,14 +443,15 @@ const same =
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
-                          <Button
-                            size="sm"
-                            disabled={same}
-                            onClick={(e) => { e.stopPropagation(); openConfirm(p); }}
-                            className="disabled:opacity-40"
-                          >
-                            <Lightbulb className="h-3.5 w-3.5" /> AI Insights
-                          </Button>
+<Button
+  size="sm"
+onClick={(e) => {
+  e.stopPropagation();
+  openConfirm(p);
+}}
+>
+  <Lightbulb className="h-3.5 w-3.5" /> AI Insights
+</Button>
                         </div>
                       </td>
                     </tr>
@@ -581,37 +585,51 @@ const pct =
   Matched on: {product.matched_on}
 </p>
 
-{agentResponse?.agent_response && (
+
+
+{agentResponse && (
   <div className="mt-3 rounded-lg border border-border/60 bg-card-elevated/40 p-3">
     <p className="text-xs font-semibold uppercase tracking-wider text-primary">
       AI Agent Analysis
     </p>
 
-    <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-      {agentResponse.agent_response
-  ?.split("\n")
-  .map((line: string, index: number) => (
-<p
-  key={index}
-  className={`mb-2 rounded-md px-2 py-1 ${
-    line.includes("Suggested Price")
-      ? "bg-success/10 text-success"
-      : line.includes("Confidence Score")
-      ? "bg-primary/10 text-primary"
-      : line.includes("Inventory Insight")
-      ? "bg-warning/10 text-warning"
-      : "text-muted-foreground"
-  }`}
->
-  {line}
-</p>
-  ))}
-    </p>
+    <div className="mt-3 space-y-2 text-sm">
+      <p>
+        <strong>Pricing Strategy:</strong>{" "}
+        {agentResponse.pricing_strategy}
+      </p>
+
+      <p>
+        <strong>Reasoning:</strong>{" "}
+        {agentResponse.reasoning}
+      </p>
+
+      <p>
+        <strong>Demand Insight:</strong>{" "}
+        {agentResponse.demand_insight}
+      </p>
+
+      <p>
+        <strong>Inventory Insight:</strong>{" "}
+        {agentResponse.inventory_insight}
+      </p>
+
+      <p>
+        <strong>Competitor Insight:</strong>{" "}
+        {agentResponse.competitor_insight}
+      </p>
+
+      <p>
+        <strong>Confidence Score:</strong>{" "}
+        {agentResponse.confidence_score}
+      </p>
+    </div>
   </div>
 )}
-          </div>
+
 
           {/* Impact */}
+          </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="rounded-lg border border-border/60 bg-card-elevated/40 p-3">
               <div className="flex items-center gap-1.5 text-muted-foreground">
