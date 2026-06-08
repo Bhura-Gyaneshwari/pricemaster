@@ -609,10 +609,6 @@ const pct =
     </p>
 
     <div className="mt-3 space-y-2 text-sm">
-      <p>
-        <strong>Pricing Strategy:</strong>{" "}
-        {agentResponse.pricing_strategy}
-      </p>
 
       <p>
         <strong>Reasoning:</strong>{" "}
@@ -620,69 +616,55 @@ const pct =
       </p>
 
       <p>
-        <strong>Demand Insight:</strong>{" "}
-        {agentResponse.demand_insight}
-      </p>
-
-      <p>
-        <strong>Inventory Insight:</strong>{" "}
-        {agentResponse.inventory_insight}
-      </p>
-
-      <p>
-        <strong>Competitor Insight:</strong>{" "}
-        {agentResponse.competitor_insight}
-      </p>
-
-      <p>
         <strong>Confidence Score:</strong>{" "}
         {agentResponse.confidence_score}
       </p>
 {agentResponse.competitors && (
-  <div className="mt-4">
-    <p className="font-semibold">
-      Competitors
-    </p>
+  <div className="mt-4 rounded-xl border border-border/60 bg-card-elevated/40 p-4">
+    <div className="mb-3 flex items-center justify-between">
+      <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+        Top 5 Competitors
+      </p>
+    </div>
 
-<div className="mt-2 space-y-2">
-  {agentResponse.competitors.map(
-    (c: any, index: number) => (
-      <div
-        key={index}
-        className="rounded-md border border-border/60 p-2"
-      >
-        <p>
-          <strong>Name:</strong> {c.name}
-        </p>
+    <div className="space-y-3">
+      {agentResponse.competitors
+        .slice(0, 5)
+        .map((c: any, index: number) => (
+          <div
+            key={index}
+            className="flex items-center justify-between border-b border-border/30 pb-2"
+          >
+            <span className="max-w-[60%] text-sm">
+              {c.name}
+            </span>
 
-        <p>
-          <strong>Price:</strong> {c.price}
-        </p>
+            <div className="flex items-center gap-3">
+              <span className="font-medium">
+                {c.price}
+              </span>
 
-<p>
-  <strong>Status:</strong>{" "}
-  <span
-    className={
-      c.status.includes("lower")
-        ? "text-success"
-        : c.status.includes("higher")
-        ? "text-warning"
-        : "text-primary"
-    }
-  >
-    {c.status}
-  </span>
-</p>
-      </div>
-    )
-  )}
-</div>
-  </div>
-)}
+              <span
+                className={`rounded-full px-2 py-1 text-xs ${
+                  c.status
+                    .toLowerCase()
+                    .includes("lower")
+                    ? "bg-success/15 text-success"
+                    : "bg-warning/15 text-warning"
+                }`}
+              >
+                {c.status}
+              </span>
+            </div>
+          </div>
+        ))}
     </div>
   </div>
 )}
 
+    </div>
+  </div>
+)}
 
           {/* Impact */}
           </div>
