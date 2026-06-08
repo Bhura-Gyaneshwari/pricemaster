@@ -8,7 +8,7 @@ export async function invokeAgent(
   productName: string
 ) {
   const response = await fetch(
-    `${BASE_URL}/invoke-agent?product_name=${encodeURIComponent(
+    `${BASE_URL}/invoke-agent-new?product_name=${encodeURIComponent(
       productName
     )}&user_id=${userId}`
   );
