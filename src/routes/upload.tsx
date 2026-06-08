@@ -24,15 +24,12 @@ export default function UploadPage() {
   useState<"PROCESSING" | "COMPLETED" | "FAILED">(
     "PROCESSING"
   );
-  const [history, setHistory] = useState<UploadedFile[]>([
-    { name: "products_oct_2025.csv", size: 184320, uploadedAt: "2 days ago", type: "Product catalog" },
-    { name: "inventory_q3.xlsx", size: 92160, uploadedAt: "1 week ago", type: "Inventory" },
-  ]);
-
-  const onFile = (f: File | null) => {
-    if (!f) return;
-    setFile(f);
-  };
+  const [history, setHistory] =
+  useState<UploadedFile[]>([]);
+const onFile = (f: File | null) => {
+  if (!f) return;
+  setFile(f);
+};
 
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -46,7 +43,7 @@ const upload = async () => {
 
   const user = getUser();
 
-  if (!user?.email) {
+  if (!user?.user_id) {
     toast.error("Please sign in first");
     return;
   }
@@ -55,7 +52,7 @@ const upload = async () => {
     setUploading(true);
 
     const result = await uploadFile(
-      user.email,
+     user.user_id,
       file
     );
 
