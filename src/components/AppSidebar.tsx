@@ -8,6 +8,7 @@ import {
   LogOut,
   BarChart3,
   Upload,
+  TrendingUp,
 } from "lucide-react";
 import { clearSession } from "@/lib/session";
 
@@ -29,7 +30,8 @@ const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Pricing", url: "/pricing", icon: Tag },
   { title: "Inventory", url: "/inventory", icon: Boxes },
-  { title: "Analytics", url: "/analytics", icon: BarChart3 },
+  // { title: "Analytics", url: "/analytics", icon: BarChart3 },
+  { title: "Forecasting", url: "/forecasting", icon: TrendingUp },
   { title: "Upload Dataset", url: "/upload", icon: Upload },
 ];
 

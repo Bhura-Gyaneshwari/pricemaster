@@ -1,4 +1,6 @@
+/* eslint-disable prettier/prettier */
 import { Routes, Route, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import ForecastingPage from "@/routes/forecasting";
 import { useEffect, useState } from "react";
 import { Bell, Search, LogOut } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -119,6 +121,7 @@ export default function App() {
         <Route path="inventory" element={<InventoryPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="upload" element={<UploadPage />} />
+        <Route path="forecasting" element={<ForecastingPage />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
